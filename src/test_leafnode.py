@@ -17,3 +17,7 @@ class TestLeafNode(unittest.TestCase):
     def test_repr(self):
         node = LeafNode("a", "click me", props={"href":"https://google.com"})
         self.assertEqual(str(node), "LeafNode(a, click me, {'href': 'https://google.com'})")
+    
+    def test_notag_to_html(self):
+        node = LeafNode("", "click me", props={"href":"https://google.com"})
+        self.assertEqual(node.to_html(), "click me")
