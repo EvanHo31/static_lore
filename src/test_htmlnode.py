@@ -24,6 +24,12 @@ class Test_HTMLNode(unittest.TestCase):
         expect = " href=\"https://www.google.com\" target=\"_blank\""
         self.assertEqual(test, expect)
     
+    def test_props_none(self):
+        node = HTMLNode('p', '1234', [])
+        test = node.props_to_html()
+        expect = ""
+        self.assertEqual(test, expect)
+
     def test_tohtml(self):
         node = HTMLNode()
         self.assertRaises(NotImplementedError, node.to_html)

@@ -10,6 +10,8 @@ class HTMLNode():
 
     def props_to_html(self):
         line = ""
+        if self.props is None:
+            return ""
         for key, value in self.props.items():
             line += f" {key}=\"{value}\""
         return line
