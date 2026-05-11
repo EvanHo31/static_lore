@@ -1,5 +1,5 @@
 import unittest
-from conversion import text_node_to_html_node, text_to_text_nodes
+from conversion import text_node_to_html_node, text_to_text_nodes, markdown_to_blocks
 from textnode import TextNode, TextType
 
 class Test_test_node_to_html_node(unittest.TestCase):
@@ -87,3 +87,46 @@ class Test_Text_To_TextNode(unittest.TestCase):
         expect = []
         self.assertEqual(text_to_text_nodes(""), expect)
 
+
+class Test_Markdown_Converstion(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = """
+        This is **bolded** paragraph
+
+        This is another paragraph with _italic_ text and `code` here
+        This is the same paragraph on a new line
+
+        - This is a list
+        - with items
+        """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+    
+    def test_markdown_to_blocks_with_extra_newlines(self):
+        md = """
+        This is **bolded** paragraph
+ 
+        
+
+        This is another paragraph with _italic_ text and `code` here
+        This is the same paragraph on a new line
+
+        - This is a list
+        - with items
+        """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )

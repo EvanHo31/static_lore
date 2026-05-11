@@ -38,3 +38,18 @@ def text_to_text_nodes(text:str):
     nodes = split_nodes_link(nodes)
     nodes = split_nodes_image(nodes)
     return nodes
+
+def markdown_to_blocks(text:str):
+    lines = text.split("\n")
+    blocks = []
+    block = ""
+    for line in lines:
+        line = line.strip()
+        if line == "":
+            if block == "":
+                continue
+            blocks.append(block[:-1])
+            block = ""
+        else:
+            block += line + "\n"
+    return blocks
