@@ -35,3 +35,46 @@ def extract_markdown_links(text:str):
 def extract_markdown_images(text:str):
     matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
     return matches
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        node:TextNode
+        if node.text_type is TextType.CODE:
+            new_nodes.append(node)
+            continue
+        images = extract_markdown_images(node.text)
+        if len(images) == 0:
+            new_nodes.append(node)
+            continue
+        i = 0; j = 0; 
+        for image in images:
+            j = str(node.text).find(image[0])
+            temp_list = [TextNode(node.text[i:j-2], TextType.TEXT), TextNode(image[0], TextType.IMAGE, image[1])]
+            new_nodes.extend(temp_list)
+            i = j + len(image[0]) + len(image[1]) + 3
+        if len(node.text) != i:
+            new_nodes.append(TextNode(node.text[i:], TextType.TEXT))
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        node:TextNode
+        if node.text_type is TextType.CODE:
+            new_nodes.append(node)
+            continue
+        links = extract_markdown_links(node.text)
+        if len(links) == 0:
+            new_nodes.append(node)
+            continue
+        i = 0; j = 0; 
+        for link in links:
+            j = str(node.text).find(link[0])
+            temp_list = [TextNode(node.text[i:j-1], TextType.TEXT), TextNode(link[0], TextType.LINK, link[1])]
+            new_nodes.extend(temp_list)
+            i = j + len(link[0]) + len(link[1]) + 3
+        if len(node.text) != i:
+            new_nodes.append(TextNode(node.text[i:], TextType.TEXT))
+    return new_nodes
+            
