@@ -93,15 +93,20 @@ class Test_SplitNodes(unittest.TestCase):
     
     def test_no_delimiter(self):
         node = TextNode("This is text with a code block word", TextType.TEXT)
-        def test_func():
-            split_nodes_delimiter([node], "`", TextType.CODE)
-        self.assertRaises(ValueError, test_func)
+        new_nodes = split_nodes_delimiter([node], "_",TextType.TEXT)
+        self.assertEqual(new_nodes, [node])
 
 class Test_ExtractMarkdown(unittest.TestCase):
 
     def test_no_link(self):
         matches = extract_markdown_links(
             "This is text with an [link]https://i.imgur.com/zjjcJKZ.png"
+        )
+        self.assertListEqual([], matches)
+    
+    def test_extract_link_with_image(self):
+        matches = extract_markdown_links(
+            "This is text with an ![link]https://i.imgur.com/zjjcJKZ.png"
         )
         self.assertListEqual([], matches)
 
@@ -120,6 +125,12 @@ class Test_ExtractMarkdown(unittest.TestCase):
     def test_no_image(self):
         matches = extract_markdown_images(
             "This is text with an ![image]https://i.imgur.com/zjjcJKZ.png"
+        )
+        self.assertListEqual([], matches)
+    
+    def test_extract_image_with_link(self):
+        matches = extract_markdown_images(
+            "This is text with an [image]https://i.imgur.com/zjjcJKZ.png"
         )
         self.assertListEqual([], matches)
 

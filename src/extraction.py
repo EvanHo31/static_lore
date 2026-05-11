@@ -13,7 +13,8 @@ def split_nodes_delimiter(old_nodes:list, delimiter:str, text_type:TextType):
         splited = node.text.split(delimiter)
         # delimiter not found
         if len(splited) == 1:
-            raise ValueError(f"delimiter {delimiter} not found in {node.text}")
+            new_nodes.append(node)
+            continue
         # missing closing delimiter
         if len(splited)%2 == 0:
             raise ValueError(f"invalid markdown, closing delimiter {delimiter} not found")
@@ -29,7 +30,7 @@ def split_nodes_delimiter(old_nodes:list, delimiter:str, text_type:TextType):
     return new_nodes
 
 def extract_markdown_links(text:str):
-    matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    matches = re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
     return matches
 
 def extract_markdown_images(text:str):
