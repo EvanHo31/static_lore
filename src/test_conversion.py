@@ -1,5 +1,5 @@
 import unittest
-from conversion import text_node_to_html_node
+from conversion import text_node_to_html_node, text_to_text_nodes
 from textnode import TextNode, TextType
 
 class Test_test_node_to_html_node(unittest.TestCase):
@@ -44,3 +44,46 @@ class Test_test_node_to_html_node(unittest.TestCase):
         self.assertEqual(html_node.tag, 'img')
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.props, {"src":"some/url/to/somewhere","alt":"This is a text node"})
+
+class Test_Text_To_TextNode(unittest.TestCase):
+    def test(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expect = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        self.assertEqual(text_to_text_nodes(text), expect)
+    
+    def test_nested(self):
+        text = "This is **text with an _italic_** word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expect = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text with an _italic_", TextType.BOLD),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        self.assertEqual(text_to_text_nodes(text), expect)
+    
+    def test_pure_text(self):
+        text = "This is pure text"
+        expect = [
+            TextNode("This is pure text", TextType.TEXT),
+        ]
+        self.assertEqual(text_to_text_nodes(text), expect)
+    
+    def test_empty_str(self):
+        expect = []
+        self.assertEqual(text_to_text_nodes(""), expect)
+

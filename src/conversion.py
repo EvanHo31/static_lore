@@ -1,5 +1,6 @@
 from textnode import TextNode, TextType
 from leafnode import LeafNode
+from extraction import split_nodes_image, split_nodes_link, split_nodes_delimiter
 
 def text_node_to_html_node(text_node:TextNode):
     tag = ""
@@ -26,3 +27,14 @@ def text_node_to_html_node(text_node:TextNode):
             raise TypeError(f"Invalid TextType enum, got{text_node.text_type}")
     leafnode = LeafNode(tag, value, props)
     return leafnode
+
+def text_to_text_nodes(text:str):
+    if text == "":
+        return []
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_image(nodes)
+    return nodes
