@@ -1,5 +1,5 @@
 import unittest
-from splitnodes import split_nodes_delimiter
+from extraction import split_nodes_delimiter, extract_markdown_links, extract_markdown_images
 from textnode import TextNode, TextType
 
 class Test_SplitNodes(unittest.TestCase):
@@ -96,4 +96,41 @@ class Test_SplitNodes(unittest.TestCase):
         def test_func():
             split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertRaises(ValueError, test_func)
+
+
+class Test_ExtractMarkdown(unittest.TestCase):
+    def test_no_link(self):
+        matches = extract_markdown_links(
+            "This is text with an [link]https://i.imgur.com/zjjcJKZ.png"
+        )
+        self.assertListEqual([], matches)
+
+    def test_one_link(self):
+        matches = extract_markdown_links(
+            "This is text with an [link](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("link", "https://i.imgur.com/zjjcJKZ.png")], matches)
     
+    def test_two_links(self):
+        matches = extract_markdown_links(
+            "This is text with an [link1](https://i.imgur.com/zjjcJKZ.png) and [link2](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("link1", "https://i.imgur.com/zjjcJKZ.png"), ("link2", "https://i.imgur.com/zjjcJKZ.png")], matches)
+    
+    def test_no_image(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image]https://i.imgur.com/zjjcJKZ.png"
+        )
+        self.assertListEqual([], matches)
+
+    def test_one_image(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+    
+    def test_two_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image1](https://i.imgur.com/zjjcJKZ.png) and ![image2](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image1", "https://i.imgur.com/zjjcJKZ.png"), ("image2", "https://i.imgur.com/zjjcJKZ.png")], matches)
