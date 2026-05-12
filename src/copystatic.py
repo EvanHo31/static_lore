@@ -32,16 +32,16 @@ def copy_from_treemap(src, dst, treemap:dict, level=0):
         else:
             raise ValueError(f"Unexpected tree value at \"{key}\"")
 
-def copy_static():
-    if os.path.exists("public"):
-        shutil.rmtree("public")
-    if os.path.exists("public"):
-        raise RuntimeError("Failed to delete .public directory")
-    os.mkdir("public")
+def copy_static(dst:str):
+    if os.path.exists(dst):
+        shutil.rmtree(dst)
+    if os.path.exists(dst):
+        raise RuntimeError(f"Failed to delete .{dst} directory")
+    os.mkdir(dst)
     if not os.path.exists("static"):
         raise RuntimeError("\"static\" directory not found")
     treemap = get_treemap("static")
-    copy_from_treemap("static", "public", treemap)
+    copy_from_treemap("static", dst, treemap)
 
 
 if __name__ == "__main__":
