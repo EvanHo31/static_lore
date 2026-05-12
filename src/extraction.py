@@ -79,3 +79,12 @@ def split_nodes_link(old_nodes):
             new_nodes.append(TextNode(node.text[i:], TextType.TEXT))
     return new_nodes
             
+def extract_title(markdown:str):
+    lines = markdown.split("\n")
+    title = ""
+    for line in lines:
+        if line.startswith("# "):
+            title = line[2:]
+    if not title:
+        raise Exception("Title (h1)  not found in markdown file") 
+    return title

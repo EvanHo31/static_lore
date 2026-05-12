@@ -1,5 +1,6 @@
 import unittest
 from extraction import split_nodes_delimiter, extract_markdown_links, extract_markdown_images, split_nodes_image, split_nodes_link
+from extraction import extract_title
 from textnode import TextNode, TextType
 
 class Test_SplitNodes(unittest.TestCase):
@@ -239,3 +240,23 @@ class Test_Split_Link(unittest.TestCase):
             ],
             new_nodes,
         )
+
+class Test_Extract_Title(unittest.TestCase):
+    def test_extract_title(self):
+        md = "# Hello"
+        title = extract_title(md)
+        self.assertEqual(title, "Hello")
+    
+    def test_extract_title_1(self):
+        md = """
+html body
+## not a title
+# Hello
+#not a title
+"""
+        title = extract_title(md)
+        self.assertEqual(title, "Hello")
+
+    def test_exception(self):
+        md = "no title"
+        self.assertRaises(Exception, lambda: extract_title(md))
