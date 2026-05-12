@@ -1,7 +1,9 @@
 from textnode import TextNode
+from copystatic import copy_static
+from generate import generate_page
 
 def main():
-    test = TextNode("This is some anchor text", "link", "https://www.boot.dev")
-    print(test)
+    copy_static()
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 main()
