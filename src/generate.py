@@ -1,7 +1,9 @@
 from conversion import markdown_to_html_node
 from extraction import extract_title
 from parentnode import ParentNode
+from config import VERBOSE
 import os
+import shutil
 
 def pretty_html_node(node:ParentNode, level=0):
     if type(node) is not ParentNode:
@@ -14,8 +16,6 @@ def pretty_html_node(node:ParentNode, level=0):
             pretty_html_node(child, level+1)
         else:
             print(f"{' '*level}| LeafNode <{child.tag}> \"{child.value}\" ({child.props})")
-        
-
 
 def generate_page(from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
@@ -28,7 +28,8 @@ def generate_page(from_path, template_path, dest_path):
         template = f.read()
         f.close()
     html_node = markdown_to_html_node(markdown)
-    pretty_html_node(html_node)
+    if VERBOSE:
+        pretty_html_node(html_node)
     html_content = html_node.to_html()
     title = extract_title(markdown)
     template = template.replace(r"{{ Title }}", title)
@@ -39,3 +40,18 @@ def generate_page(from_path, template_path, dest_path):
         os.makedirs(targt_dir)
     with open(dest_path, "w") as f:
         f.write(template)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    dir_list = os.listdir(dir_path_content)
+    for dir in dir_list:
+        src = os.path.join(dir_path_content, dir)
+        dst = os.path.join(dest_dir_path, dir)
+        if os.path.isdir(src):
+            generate_pages_recursive(src, template_path, dst)
+        elif os.path.isfile(src):
+            if src.split(".")[-1] != "md":
+                continue
+            dir = dir.replace(".md", ".html")
+            dst = os.path.join(dest_dir_path, dir)
+            print(f"Generating page for {dst}")
+            generate_page(src, template_path, dst)
