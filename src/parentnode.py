@@ -8,7 +8,7 @@ class ParentNode(HTMLNode):
         if not self.tag:
             raise ValueError("ParentNode must have a tag")
         if not self.children:
-            raise ValueError("ParentNode must have children node")
+            raise ValueError(f"ParentNode ({self.tag}) must have children node")
         content = ""
         for child in self.children:
             content += child.to_html()
