@@ -32,8 +32,8 @@ def text_node_to_html_node(text_node:TextNode):
     return leafnode
 
 def text_to_text_nodes(text:str):
-    if text == "":
-        return []
+    # if text == "":
+    #     return []
     nodes = [TextNode(text, TextType.TEXT)]
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
     nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
@@ -90,12 +90,12 @@ def quote_to_html_node(block:str):
     html_nodes = []
     lines = block.split("\n")
     for line in lines:
-        line = line[1:]
+        line = re.findall(r"^>\s?(.*)", line)[0]
         text_nodes = text_to_text_nodes(line)
         nodes = []
         for node in text_nodes:
             nodes.append(text_node_to_html_node(node))
-        html_nodes.append(ParentNode("p", nodes))
+        html_nodes.extend(nodes)
     quote = ParentNode("blockquote", html_nodes)
     return  quote
 
