@@ -1,0 +1,1 @@
+python3 src/main.py "https://EvanHo31.github.io/static_lore/"

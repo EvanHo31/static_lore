@@ -17,7 +17,7 @@ def pretty_html_node(node:ParentNode, level=0):
         else:
             print(f"{' '*level}| LeafNode <{child.tag}> \"{child.value}\" ({child.props})")
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath="/"):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     markdown = ""
     with open(from_path, "r") as f:
@@ -34,6 +34,8 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown)
     template = template.replace(r"{{ Title }}", title)
     template = template.replace(r"{{ Content }}", html_content)
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
     full_path:str = os.path.abspath(dest_path)
     targt_dir = os.path.dirname(full_path)
     if not os.path.exists(targt_dir): 
@@ -41,17 +43,17 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w") as f:
         f.write(template)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath="/"):
     dir_list = os.listdir(dir_path_content)
     for dir in dir_list:
         src = os.path.join(dir_path_content, dir)
         dst = os.path.join(dest_dir_path, dir)
         if os.path.isdir(src):
-            generate_pages_recursive(src, template_path, dst)
+            generate_pages_recursive(src, template_path, dst, basepath)
         elif os.path.isfile(src):
             if src.split(".")[-1] != "md":
                 continue
             dir = dir.replace(".md", ".html")
             dst = os.path.join(dest_dir_path, dir)
             print(f"Generating page for {dst}")
-            generate_page(src, template_path, dst)
+            generate_page(src, template_path, dst, basepath)
